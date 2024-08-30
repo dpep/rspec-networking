@@ -1,13 +1,13 @@
-MY_NEW_GEM
+RSpec::Networking
 ======
-![Gem](https://img.shields.io/gem/dt/MY_NEW_GEM?style=plastic)
-[![codecov](https://codecov.io/gh/dpep/MY_NEW_REPO/branch/main/graph/badge.svg)](https://codecov.io/gh/dpep/MY_NEW_REPO)
+![Gem](https://img.shields.io/gem/dt/rspec-networking?style=plastic)
+[![codecov](https://codecov.io/gh/dpep/rspec-networking/branch/main/graph/badge.svg)](https://codecov.io/gh/dpep/rspec-networking)
 
-...
+RSpec matchers for IP and MAC Addresses
 
 
 ```ruby
-require "MY_NEW_GEM"
+require "rspec/networking"
 ```
 
 
