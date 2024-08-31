@@ -33,6 +33,10 @@ RSpec::Matchers.define :be_a_mac_address do
     @bits = bits
   end
 
+  chain :broadcast do
+    @broadcast = true
+  end
+
   match do |actual|
     @actual = actual
 
@@ -64,6 +68,10 @@ RSpec::Matchers.define :be_a_mac_address do
       return false
     end
 
+    if @broadcast
+      return false unless hex == 'FF' * 6
+    end
+
     matches = true
 
     if @manufacturer
@@ -90,8 +98,9 @@ RSpec::Matchers.define :be_a_mac_address do
     from_s = @manufacturer ? " from #{@manufacturer_str}" : ""
     for_s = @device ? " for #{@device}" : ""
     bits_s = @bits ? " with #{@bits} bits" : ""
+    broadcast_s = @broadcast ? " broadcast" : ""
 
-    "a MAC address#{bits_s}#{from_s}#{for_s}"
+    "a MAC address#{bits_s}#{from_s}#{for_s}#{broadcast_s}"
   end
 
   failure_message do

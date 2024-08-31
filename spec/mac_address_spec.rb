@@ -129,6 +129,12 @@ describe "be_a_mac_address" do
         is_expected.to be_a_mac_address.bits(11)
       }.to raise_error(ArgumentError)
     end
+
+    describe "#broadcast" do
+      it { is_expected.not_to be_a_mac_address.broadcast }
+
+      it { expect("FF:FF:FF:FF:FF:FF").to be_a_mac_address.broadcast }
+    end
   end
 
   context "with 64 bits" do
@@ -148,6 +154,12 @@ describe "be_a_mac_address" do
           is_expected.to be_a_mac_address.bits(48)
         }.to fail_including("48 bits")
       end
+    end
+
+    describe "#broadcast" do
+      subject { "FF:FF:FF:FF:FE:FF:FF:FF" }
+
+      it { is_expected.to be_a_mac_address.bits(64).broadcast }
     end
   end
 end
