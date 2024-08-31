@@ -12,7 +12,7 @@ require "rspec/networking"
 
 
 ### Resources
-
+https://en.wikipedia.org/wiki/IP_address
 https://en.wikipedia.org/wiki/MAC_address
 https://www.lifewire.com/introduction-to-mac-addresses-817937
 
