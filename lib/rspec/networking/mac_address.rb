@@ -9,7 +9,7 @@ RSpec::Matchers.define :be_a_mac_address do
       @manufacturer = manufacturer.delete('.:-').upcase
     else
       # manufacturer lookup
-      @manufacturer = manufacturer.to_s.downcase
+      @manufacturer = manufacturer.to_s.downcase.tr(' ', '_')
 
       unless RSpec::Networking::MANUFACTURERS.key?(@manufacturer)
         raise ArgumentError, "unknown manufacturer: #{manufacturer}"
