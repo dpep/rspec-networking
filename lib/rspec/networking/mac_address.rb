@@ -6,8 +6,15 @@ RSpec::Matchers.define :be_a_mac_address do
 
     return false unless actual.is_a?(String)
 
+    # MM:MM:MM:SS:SS:SS
     hex = ['\h{2}'] * 5
-    actual.match?(/^\h{2}([:-])#{hex.join('\1')}$/)
+    matches = actual.match?(/^\h{2}([:-])#{hex.join('\1')}$/)
+
+    # MMM.MMM.SSS.SSS
+    hex = ['\h{3}'] * 4
+    matches ||= actual.match?(/^#{hex.join('.')}$/)
+
+    matches
   end
 
   description do

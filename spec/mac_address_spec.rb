@@ -28,6 +28,12 @@ describe "be_a_mac_address" do
     end
   end
 
+  context "when separated by periods" do
+    subject { "000.000.000.000" }
+
+    it { is_expected.to be_a_mac_address }
+  end
+
   context "with invalid address" do
     specify { expect("abc").not_to be_a_mac_address }
     specify { expect(:xyz).not_to be_a_mac_address }
