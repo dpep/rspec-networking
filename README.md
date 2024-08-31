@@ -6,6 +6,12 @@ RSpec::Networking
 RSpec matchers for IP and MAC Addresses
 
 
+### Install
+```bash
+gem install rspec-networking
+```
+
+
 ### Usage
 
 ```ruby
