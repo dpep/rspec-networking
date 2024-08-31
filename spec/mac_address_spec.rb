@@ -137,6 +137,17 @@ describe "be_a_mac_address" do
     end
   end
 
+  describe "#unicast and #multicast" do
+    it { expect("00:00:00:00:00:00").to be_a_mac_address.unicast }
+    it { expect("0E:00:00:00:00:00").to be_a_mac_address.unicast }
+
+    it { expect("01:00:00:00:00:00").to be_a_mac_address.multicast }
+    it { expect("0F:00:00:00:00:00").to be_a_mac_address.multicast }
+
+    it { expect("00:00:00:00:00:00").not_to be_a_mac_address.multicast }
+    it { expect("01:00:00:00:00:00").not_to be_a_mac_address.unicast }
+  end
+
   context "with 64 bits" do
     subject { "00:00:00:FF:FE:11:11:11" }
 
@@ -144,6 +155,7 @@ describe "be_a_mac_address" do
     it { is_expected.to be_a_mac_address.from("00:00:00") }
     it { is_expected.to be_a_mac_address.from("Xerox") }
     it { is_expected.to be_a_mac_address.for("11:11:11") }
+    it { is_expected.to be_a_mac_address.unicast }
 
     describe "#bits" do
       it { is_expected.to be_a_mac_address.bits(64) }
