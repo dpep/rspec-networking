@@ -11,6 +11,11 @@ require "rspec/networking"
 ```
 
 
+### Resources
+
+https://en.wikipedia.org/wiki/MAC_address
+https://www.lifewire.com/introduction-to-mac-addresses-817937
+
 ----
 ## Contributing
 

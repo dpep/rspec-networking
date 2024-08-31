@@ -71,4 +71,32 @@ describe "be_a_mac_address" do
       mac: a_mac_address,
     )
   end
+
+  describe "#from" do
+    subject { "00:00:00:00:00:00" }
+
+    it { is_expected.to be_a_mac_address.from("00:00:00") }
+    it { is_expected.to be_a_mac_address.from("00-00-00") }
+    it { is_expected.to be_a_mac_address.from("000.000") }
+
+    it { is_expected.to be_a_mac_address.from("xerox") }
+
+    it "catches mismatches" do
+      expect {
+        is_expected.to be_a_mac_address.from("apple")
+      }.to fail
+
+      expect {
+        is_expected.to be_a_mac_address.from("FF:FF:FF")
+      }.to fail
+    end
+
+    context "with an unknown manufacturer" do
+      it "raises an error" do
+        expect {
+          is_expected.to be_a_mac_address.from("foo")
+        }.to raise_error(ArgumentError)
+      end
+    end
+  end
 end
