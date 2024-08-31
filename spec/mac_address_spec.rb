@@ -5,10 +5,6 @@ describe "be_a_mac_address" do
     it { is_expected.to be_a_mac_address }
   end
 
-  context "with nil address" do
-    it { is_expected.to be_a_mac_address }
-  end
-
   context "with generated addresses" do
     specify do
       100.times { expect(Faker::Internet.mac_address).to be_a_mac_address }
@@ -59,14 +55,14 @@ describe "be_a_mac_address" do
   it "is composable" do
     data = {
       abc: { a: 1 },
-      mac: Faker::Internet.mac_address,
+      addr: Faker::Internet.mac_address,
     }
 
-    expect(data).to include(mac: a_mac_address)
+    expect(data).to include(addr: a_mac_address)
 
     expect(data).to match(
       abc: a_hash_including(:a),
-      mac: a_mac_address,
+      addr: a_mac_address,
     )
   end
 
