@@ -17,6 +17,14 @@ RSpec::Matchers.define :be_a_mac_address do
     end
   end
 
+  chain :for do |device|
+    unless device.match?(/^\h{2}([:-])\h{2}\1\h{2}$/) || device.match?(/^\h{3}\.\h{3}$/)
+      raise ArgumentError, "invalid device: #{device}"
+    end
+
+    @device = device
+  end
+
   match do |actual|
     @actual = actual
 
@@ -43,11 +51,19 @@ RSpec::Matchers.define :be_a_mac_address do
       end
     end
 
+    if @device
+      hex = actual.delete('.:-').slice(-6, 6).upcase
+      matches &&= hex == @device.delete('.:-').upcase
+    end
+
     matches
   end
 
   description do
-    @manufacturer ? "a MAC address from #{@manufacturer_str}" : "a MAC address"
+    from_s = @manufacturer ? " from #{@manufacturer_str}" : ""
+    for_s = @device ? " for #{@device}" : ""
+
+    "a MAC address#{from_s}#{for_s}"
   end
 
   failure_message do

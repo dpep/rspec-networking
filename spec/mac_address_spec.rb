@@ -73,7 +73,7 @@ describe "be_a_mac_address" do
   end
 
   describe "#from" do
-    subject { "00:00:00:00:00:00" }
+    subject { "00:00:00:11:11:11" }
 
     it { is_expected.to be_a_mac_address.from("00:00:00") }
     it { is_expected.to be_a_mac_address.from("00-00-00") }
@@ -88,7 +88,7 @@ describe "be_a_mac_address" do
 
       expect {
         is_expected.to be_a_mac_address.from("FF:FF:FF")
-      }.to fail
+      }.to fail_including("from FF:FF:FF")
     end
 
     context "with an unknown manufacturer" do
@@ -97,6 +97,20 @@ describe "be_a_mac_address" do
           is_expected.to be_a_mac_address.from("foo")
         }.to raise_error(ArgumentError)
       end
+    end
+  end
+
+  describe "#for" do
+    subject { "00:00:00:11:11:11" }
+
+    it { is_expected.to be_a_mac_address.for("11:11:11") }
+    it { is_expected.to be_a_mac_address.for("11-11-11") }
+    it { is_expected.to be_a_mac_address.for("111.111") }
+
+    it "catches mismatches" do
+      expect {
+        is_expected.to be_a_mac_address.for("FF:FF:FF")
+      }.to fail_including("for FF:FF:FF")
     end
   end
 end
