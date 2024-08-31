@@ -6,8 +6,37 @@ RSpec::Networking
 RSpec matchers for IP and MAC Addresses
 
 
+### Usage
+
 ```ruby
 require "rspec/networking"
+
+expect(obj).to be_an_ip_address
+
+# check version
+expect(obj).to be_an_ip_address.v4
+
+# check for localhost
+expect(obj).to be_an_ip_address.localhost
+
+# compose with other matchers
+expect(data).to include(addr: an_ip_address)
+
+
+
+###  match a MAC address  ###
+expect(obj).to be_a_mac_address
+
+expect(obj).to be_a_mac_address.broadcast
+expect(obj).to be_a_mac_address.multicast
+expect(obj).to be_a_mac_address.unicast
+
+# check manufacturer or specific device
+expect(obj).to be_a_mac_address.from("xerox")
+expect(obj).to be_a_mac_address.for(device)
+
+# compose with other matchers
+expect(data).to include(addr: a_mac_address)
 ```
 
 
