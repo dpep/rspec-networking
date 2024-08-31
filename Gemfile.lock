@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rspec-networking (0.0.1)
+    rspec-networking (0.1.0)
       rspec-expectations (>= 3)
 
 GEM
