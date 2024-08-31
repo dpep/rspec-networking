@@ -1,13 +1,11 @@
 describe "be_a_mac_address" do
-  context "with a valid address" do
-    subject { "01-23-45-67-89-AB" }
+  subject { "00:00:00:11:11:11" }
 
+  context "with a valid address" do
     it { is_expected.to be_a_mac_address }
   end
 
   context "with nil address" do
-    subject { "00-00-00-00-00-00" }
-
     it { is_expected.to be_a_mac_address }
   end
 
@@ -17,8 +15,8 @@ describe "be_a_mac_address" do
     end
   end
 
-  context "when separated by colons" do
-    subject { "00:00:00:00:00:00" }
+  context "when separated by dashes" do
+    subject { "00-00-00-00-00-00" }
 
     it { is_expected.to be_a_mac_address }
 
@@ -73,8 +71,6 @@ describe "be_a_mac_address" do
   end
 
   describe "#from" do
-    subject { "00:00:00:11:11:11" }
-
     it { is_expected.to be_a_mac_address.from("00:00:00") }
     it { is_expected.to be_a_mac_address.from("00-00-00") }
     it { is_expected.to be_a_mac_address.from("000.000") }
@@ -101,8 +97,6 @@ describe "be_a_mac_address" do
   end
 
   describe "#for" do
-    subject { "00:00:00:11:11:11" }
-
     it { is_expected.to be_a_mac_address.for("11:11:11") }
     it { is_expected.to be_a_mac_address.for("11-11-11") }
     it { is_expected.to be_a_mac_address.for("111.111") }
@@ -111,6 +105,49 @@ describe "be_a_mac_address" do
       expect {
         is_expected.to be_a_mac_address.for("FF:FF:FF")
       }.to fail_including("for FF:FF:FF")
+    end
+
+    it "catches invalid devices" do
+      expect {
+        is_expected.to be_a_mac_address.for("FF:FF")
+      }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe "#bits" do
+    it { is_expected.to be_a_mac_address.bits(48) }
+    it { is_expected.not_to be_a_mac_address.bits(64) }
+
+    it "catches mismatches" do
+      expect {
+        is_expected.to be_a_mac_address.bits(64)
+      }.to fail_including("64 bits")
+    end
+
+    it "catches invalid bit lengths" do
+      expect {
+        is_expected.to be_a_mac_address.bits(11)
+      }.to raise_error(ArgumentError)
+    end
+  end
+
+  context "with 64 bits" do
+    subject { "00:00:00:FF:FE:11:11:11" }
+
+    it { is_expected.to be_a_mac_address }
+    it { is_expected.to be_a_mac_address.from("00:00:00") }
+    it { is_expected.to be_a_mac_address.from("Xerox") }
+    it { is_expected.to be_a_mac_address.for("11:11:11") }
+
+    describe "#bits" do
+      it { is_expected.to be_a_mac_address.bits(64) }
+      it { is_expected.not_to be_a_mac_address.bits(48) }
+
+      it "catches mismatches" do
+        expect {
+          is_expected.to be_a_mac_address.bits(48)
+        }.to fail_including("48 bits")
+      end
     end
   end
 end

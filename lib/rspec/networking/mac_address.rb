@@ -25,35 +25,62 @@ RSpec::Matchers.define :be_a_mac_address do
     @device = device
   end
 
+  chain :bits do |bits|
+    unless [ 48, 64 ].include?(bits)
+      raise ArgumentError, "invalid bit length: #{bits}"
+    end
+
+    @bits = bits
+  end
+
   match do |actual|
     @actual = actual
 
     return false unless actual.is_a?(String)
 
-    # MM:MM:MM:SS:SS:SS
-    # MM-MM-MM-SS-SS-SS
-    hex = ['\h{2}'] * 5
-    matches = actual.match?(/^\h{2}([:-])#{hex.join('\1')}$/)
+    hex = nil
 
-    # MMM.MMM.SSS.SSS
-    hex = ['\h{3}'] * 4
-    matches ||= actual.match?(/^#{hex.join('.')}$/)
+    if actual.match?(/^\h{2}(:\h{2}){7}$/) || actual.match?(/^\h{4}(:\h{4}){3}$/)
+      # 64 bits
+      # 00:00:00:FF:FE:00:00:00
+      # 0000:00FF:FE00:0000
+
+      hex = actual.delete(':').upcase
+      return false unless hex.slice(6, 4) == 'FFFE'
+      return false if @bits == 48
+
+      # normalize to 48 bits
+      hex.slice!(6, 4)
+    elsif actual.match?(/^\h{2}([:-])(\h{2}\1){4}\h{2}$/) || actual.match?(/^\h{3}(\.\h{3}){3}$/)
+      # 48 bits
+      # MM:MM:MM:SS:SS:SS
+      # MM-MM-MM-SS-SS-SS
+      # MMM.MMM.SSS.SSS
+
+      return false if @bits == 64
+
+      hex = actual.delete('.:-').upcase
+    else
+      return false
+    end
+
+    matches = true
 
     if @manufacturer
-      hex = actual.delete('.:-').slice(0, 6).upcase
+      prefix = hex.slice(0, 6)
 
       matches &&= if @manufacturer_str.match?(/[.:-]/)
         # exact match
-        hex == @manufacturer
+        prefix == @manufacturer
       else
         # manufacturer lookup
-        RSpec::Networking::MANUFACTURERS[@manufacturer].include?(hex)
+        RSpec::Networking::MANUFACTURERS[@manufacturer].include?(prefix)
       end
     end
 
     if @device
-      hex = actual.delete('.:-').slice(-6, 6).upcase
-      matches &&= hex == @device.delete('.:-').upcase
+      suffix = hex.slice(-6, 6)
+      matches &&= suffix == @device.delete('.:-').upcase
     end
 
     matches
@@ -62,8 +89,9 @@ RSpec::Matchers.define :be_a_mac_address do
   description do
     from_s = @manufacturer ? " from #{@manufacturer_str}" : ""
     for_s = @device ? " for #{@device}" : ""
+    bits_s = @bits ? " with #{@bits} bits" : ""
 
-    "a MAC address#{from_s}#{for_s}"
+    "a MAC address#{bits_s}#{from_s}#{for_s}"
   end
 
   failure_message do
