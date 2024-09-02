@@ -17,6 +17,8 @@ gem install rspec-networking
 ```ruby
 require "rspec/networking"
 
+
+###  match an IP address  ###
 expect(obj).to be_an_ip_address
 
 # check version
