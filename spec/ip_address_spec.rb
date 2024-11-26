@@ -28,6 +28,38 @@ describe "be_an_ip_address" do
   end
 
   describe "#localhost" do
+    describe "v4 localhost" do
+      let(:ip) { "127.0.0.1" }
+      it { expect(ip).to be_an_ip_address }
+      it { expect(ip).to be_an_ip_address.v4 }
+      it { expect(ip).not_to be_an_ip_address.v6 }
+      it { expect(ip).to be_an_ip_address.localhost }
+      it { expect(ip).to be_an_ip_address.localhost.v4 }
+      it { expect(ip).not_to be_an_ip_address.localhost.v6 }
+    end
+
+    describe "v6 localhost" do
+      describe "short form" do
+        let(:ip) { "::1" }
+        it { expect(ip).to be_an_ip_address }
+        it { expect(ip).to be_an_ip_address.v6 }
+        it { expect(ip).not_to be_an_ip_address.v4 }
+        it { expect(ip).to be_an_ip_address.localhost }
+        it { expect(ip).to be_an_ip_address.localhost.v6 }
+        it { expect(ip).not_to be_an_ip_address.localhost.v4 }
+      end
+
+      describe "long form" do
+        let(:ip) { "0:0:0:0:0:0:0:1" }
+        it { expect(ip).to be_an_ip_address }
+        it { expect(ip).to be_an_ip_address.v6 }
+        it { expect(ip).not_to be_an_ip_address.v4 }
+        it { expect(ip).to be_an_ip_address.localhost }
+        it { expect(ip).to be_an_ip_address.localhost.v6 }
+        it { expect(ip).not_to be_an_ip_address.localhost.v4 }
+      end
+    end
+
     let(:ip) { "1.1.1.1" }
 
     it { is_expected.to be_an_ip_address.localhost }
