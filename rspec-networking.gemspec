@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 3"
 
   s.add_dependency "rspec-expectations", ">= 3"
+  s.add_dependency "ipaddr"
 
   s.add_development_dependency "byebug"
   s.add_development_dependency "faker"

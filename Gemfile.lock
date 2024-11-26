@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     rspec-networking (0.1.0)
+      ipaddr
       rspec-expectations (>= 3)
 
 GEM
@@ -15,6 +16,7 @@ GEM
       i18n (>= 1.8.11, < 2)
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
+    ipaddr (1.2.7)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
