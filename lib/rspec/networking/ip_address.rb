@@ -1,3 +1,5 @@
+require "ipaddr"
+
 RSpec::Matchers.define :be_an_ip_address do
   chain :v4 do
     @version = 4
