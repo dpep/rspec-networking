@@ -15,7 +15,7 @@ GEM
       reline (>= 0.3.8)
     diff-lcs (1.6.2)
     docile (1.4.1)
-    erb (4.0.4)
+    erb (4.0.4.1)
       cgi (>= 0.3.3)
     faker (3.5.3)
       i18n (>= 1.8.11, < 2)
