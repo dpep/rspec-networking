@@ -1,16 +1,14 @@
 require_relative "lib/rspec/networking/version"
-package = RSpec::Networking
-package_name = "rspec-networking"
 
 Gem::Specification.new do |s|
   s.authors     = ["Daniel Pepper"]
   s.description = "RSpec matchers for IP and MAC Addresses"
   s.files       = `git ls-files * ':!:spec'`.split("\n")
-  s.homepage    = "https://github.com/dpep/#{package_name}"
+  s.homepage    = "https://github.com/dpep/rspec-networking"
   s.license     = "MIT"
-  s.name        = package_name
-  s.summary     = package.to_s
-  s.version     = package.const_get "VERSION"
+  s.name        = "rspec-networking"
+  s.summary     = "RSpec::Networking"
+  s.version     = RSpec::Networking::VERSION
 
   s.required_ruby_version = ">= 3"
 
