@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+# Regenerates lib/rspec/networking/mac_address/*.txt from the IEEE OUI registry.
+#
+# usage: script/update_manufacturers [path/to/oui.csv]
+
+require "csv"
+require "net/http"
+
+URL = "https://standards-oui.ieee.org/oui/oui.csv"
+DIR = File.expand_path("../lib/rspec/networking/mac_address", __dir__)
+
+# matched against the registry's "Organization Name"
+MANUFACTURERS = {
+  "apple" => /\AApple, Inc/,
+  "eero" => /\Aeero/i,
+  "google" => /\AGoogle/,
+  "microsoft" => /\AMicrosoft/i,
+  "nokia" => /\ANokia/,
+  "oracle" => /\AOracle/,
+  "sony" => /\ASony/i,
+  "texas_instruments" => /\ATexas Instruments/,
+  "toshiba" => /Toshiba/i,
+  "xerox" => /\AXerox/i,
+  "xiaomi" => /Xiaomi/i,
+  "zyxel" => /Zyxel/i,
+}
+
+csv = ARGV[0] ? File.read(ARGV[0]) : Net::HTTP.get(URI(URL))
+
+# only MA-L assignments are full 24-bit OUIs
+rows = CSV.parse(csv, headers: true).select { |row| row["Registry"] == "MA-L" }
+
+MANUFACTURERS.each do |name, pattern|
+  ouis = rows.select { |row| row["Organization Name"].to_s.strip.match?(pattern) }
+             .map { |row| row["Assignment"].upcase }
+             .sort
+             .uniq
+
+  abort "no OUIs found for #{name}" if ouis.empty?
+
+  File.write("#{DIR}/#{name}.txt", ouis.join("\n") + "\n")
+  puts "#{name}: #{ouis.size}"
+end

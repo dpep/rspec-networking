@@ -65,3 +65,5 @@ Yes please  :)
 1. Commit your changes (`git commit -am 'awesome new feature'`)
 1. Push your branch (`git push origin my-feature`)
 1. Create a Pull Request
+
+Manufacturer OUIs come from the [IEEE registry](https://standards-oui.ieee.org/); refresh them with `script/update_manufacturers`.
