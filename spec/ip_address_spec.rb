@@ -40,7 +40,7 @@ describe "be_an_ip_address" do
 
         expect {
           is_expected.not_to be_an_ip_address.v4.localhost
-        }.to fail_including("not to be an IPv4 localhost")
+        }.to fail_including("not to be an IPv4 localhost address")
       end
     end
 
@@ -88,6 +88,14 @@ describe "be_an_ip_address" do
     it { expect("abc").not_to be_an_ip_address }
     it { expect("").not_to be_an_ip_address }
     it { expect(nil).not_to be_an_ip_address }
+    it { expect("10.0.0.0/8").not_to be_an_ip_address }
+    it { expect(IPAddr.new("10.0.0.0/8")).not_to be_an_ip_address }
+    it { expect("::/64").not_to be_an_ip_address }
+  end
+
+  context "with a mismatched IPAddr object" do
+    it { expect(IPAddr.new("::2")).not_to be_an_ip_address.v4 }
+    it { expect(IPAddr.new("::2")).not_to be_an_ip_address.localhost }
   end
 
   describe "failure messages" do
@@ -114,7 +122,19 @@ describe "be_an_ip_address" do
 
       expect {
         expect(nil).to be_an_ip_address.v6.localhost
-      }.to fail_including("to be an IPv6 localhost")
+      }.to fail_including("to be an IPv6 localhost address")
+    end
+
+    it "renders the actual value" do
+      expect {
+        expect(nil).to be_an_ip_address
+      }.to fail_with("expected nil to be an IP address")
+    end
+
+    it "reads well when composed" do
+      expect {
+        expect(addr: "abc").to include(addr: an_ip_address.v4)
+      }.to fail_including("(an IPv4 address)")
     end
   end
 end
