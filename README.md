@@ -23,6 +23,7 @@ expect(obj).to be_an_ip_address
 
 # check version
 expect(obj).to be_an_ip_address.v4
+expect(obj).to be_an_ip_address.v6
 
 # check for localhost
 expect(obj).to be_an_ip_address.localhost
