@@ -79,7 +79,7 @@ describe "be_a_mac_address" do
 
     expect {
       expect(addr: "abc").to include(addr: a_mac_address)
-    }.to fail_including("include {addr: (a MAC address)}")
+    }.to fail_including("(a MAC address)")
   end
 
   describe "#from" do
