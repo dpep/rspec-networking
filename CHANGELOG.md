@@ -1,6 +1,3 @@
-## Unreleased
-- Requires Ruby >= 3.3.
-
 ###  0.1.0  (2024-08-31)
 - ip address
 - mac addresses

@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
     "rubygems_mfa_required" => "true",
   }
 
-  s.required_ruby_version = ">= 3.3"
+  s.required_ruby_version = ">= 3"
 
   s.add_dependency "rspec-expectations", ">= 3"
 
