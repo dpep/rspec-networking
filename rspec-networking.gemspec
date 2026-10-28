@@ -2,7 +2,7 @@ require_relative "lib/rspec/networking/version"
 
 Gem::Specification.new do |s|
   s.authors     = ["Daniel Pepper"]
-  s.description = "RSpec matchers for IP and MAC addresses, including MAC manufacturer lookup"
+  s.description = "RSpec matchers for IP and MAC addresses"
   s.files       = `git ls-files * ':!:spec'`.split("\n")
   s.homepage    = "https://github.com/dpep/rspec-networking"
   s.license     = "MIT"
