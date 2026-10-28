@@ -1,34 +1,48 @@
-require 'rspec/networking/mac_address_manufacturers'
+require "rspec/networking/mac_address_manufacturers"
+
+module RSpec
+  module Networking
+    module MacAddress
+      # MM:MM:MM:SS:SS:SS, MM-MM-MM-SS-SS-SS, MMMM.MMSS.SSSS
+      EUI48 = /\A\h{2}([:-])(\h{2}\1){4}\h{2}\z|\A\h{4}(\.\h{4}){2}\z/
+
+      # MM:MM:MM:FF:FE:SS:SS:SS, MMMM:MMFF:FESS:SSSS
+      EUI64 = /\A\h{2}([:-])(\h{2}\1){6}\h{2}\z|\A\h{4}(:\h{4}){3}\z/
+
+      # half an EUI-48: MM:MM:MM or SS-SS-SS
+      HALF = /\A\h{2}([:-])\h{2}\1\h{2}\z/
+
+      def self.normalize(str)
+        str.delete(".:-").upcase
+      end
+    end
+  end
+end
 
 RSpec::Matchers.define :be_a_mac_address do
+  mac = RSpec::Networking::MacAddress
+
   chain :from do |manufacturer|
-    @manufacturer_str = manufacturer
+    @manufacturer = manufacturer
 
-    if manufacturer.match?(/^\h{2}([:-])\h{2}\1\h{2}$/) || manufacturer.match?(/^\h{3}\.\h{3}$/)
-      # exact match
-      @manufacturer = manufacturer.delete('.:-').upcase
+    @prefixes = if mac::HALF.match?(manufacturer.to_s)
+      Set[mac.normalize(manufacturer)]
     else
-      # manufacturer lookup
-      @manufacturer = manufacturer.to_s.downcase.tr(' ', '_')
-
-      unless RSpec::Networking::MANUFACTURERS.key?(@manufacturer)
+      RSpec::Networking::MANUFACTURERS.fetch(manufacturer.to_s.downcase.tr(" ", "_")) do
         raise ArgumentError, "unknown manufacturer: #{manufacturer}"
       end
     end
   end
 
   chain :for do |device|
-    unless device.match?(/^\h{2}([:-])\h{2}\1\h{2}$/) || device.match?(/^\h{3}\.\h{3}$/)
-      raise ArgumentError, "invalid device: #{device}"
-    end
+    raise ArgumentError, "invalid device: #{device}" unless mac::HALF.match?(device.to_s)
 
     @device = device
+    @suffix = mac.normalize(device)
   end
 
   chain :bits do |bits|
-    unless [ 48, 64 ].include?(bits)
-      raise ArgumentError, "invalid bit length: #{bits}"
-    end
+    raise ArgumentError, "invalid bit length: #{bits}" unless [48, 64].include?(bits)
 
     @bits = bits
   end
@@ -46,85 +60,46 @@ RSpec::Matchers.define :be_a_mac_address do
   end
 
   match do |actual|
-    @actual = actual
-
     return false unless actual.is_a?(String)
 
-    hex = nil
-
-    if actual.match?(/^\h{2}(:\h{2}){7}$/) || actual.match?(/^\h{4}(:\h{4}){3}$/)
-      # 64 bits
-      # 00:00:00:FF:FE:00:00:00
-      # 0000:00FF:FE00:0000
-
-      hex = actual.delete(':').upcase
-      return false unless hex.slice(6, 4) == 'FFFE'
+    if mac::EUI64.match?(actual)
       return false if @bits == 48
 
-      # normalize to 48 bits
-      hex.slice!(6, 4)
-    elsif actual.match?(/^\h{2}([:-])(\h{2}\1){4}\h{2}$/) || actual.match?(/^\h{3}(\.\h{3}){3}$/)
-      # 48 bits
-      # MM:MM:MM:SS:SS:SS
-      # MM-MM-MM-SS-SS-SS
-      # MMM.MMM.SSS.SSS
+      hex = mac.normalize(actual)
+      return false unless hex[6, 4] == "FFFE"
 
+      # normalize to 48 bits
+      hex = hex[0, 6] + hex[10, 6]
+    elsif mac::EUI48.match?(actual)
       return false if @bits == 64
 
-      hex = actual.delete('.:-').upcase
+      hex = mac.normalize(actual)
     else
       return false
     end
 
-    if @broadcast
-      return false unless hex == 'FF' * 6
-    end
+    return false if @broadcast && hex != "FF" * 6
 
-    if @cast
-      bit = @cast == :multicast ? 1 : 0
+    # the I/G bit: least significant bit of the first octet
+    return false if @cast && hex[0, 2].to_i(16).odd? != (@cast == :multicast)
 
-      return false unless hex[1].to_i(16) & 1 == bit
-    end
+    return false if @prefixes && !@prefixes.include?(hex[0, 6])
+    return false if @suffix && @suffix != hex[6, 6]
 
-    matches = true
-
-    if @manufacturer
-      prefix = hex.slice(0, 6)
-
-      matches &&= if @manufacturer_str.match?(/[.:-]/)
-        # exact match
-        prefix == @manufacturer
-      else
-        # manufacturer lookup
-        RSpec::Networking::MANUFACTURERS[@manufacturer].include?(prefix)
-      end
-    end
-
-    if @device
-      suffix = hex.slice(-6, 6)
-      matches &&= suffix == @device.delete('.:-').upcase
-    end
-
-    matches
+    true
   end
 
   description do
-    from_s = @manufacturer ? " from #{@manufacturer_str}" : ""
-    for_s = @device ? " for #{@device}" : ""
-    bits_s = @bits ? " with #{@bits} bits" : ""
-    broadcast_s = @broadcast ? " broadcast" : ""
-    cast_s = @cast ? " #{@cast}" : ""
-
-    "a MAC address#{bits_s}#{from_s}#{for_s}#{broadcast_s}#{cast_s}"
-  end
-
-  failure_message do
-    "expected '#{@actual}' to be #{description}"
-  end
-
-  failure_message_when_negated do
-    "expected '#{@actual}' not to be #{description}"
+    [
+      "be a",
+      ("broadcast" if @broadcast),
+      @cast,
+      "MAC address",
+      ("with #{@bits} bits" if @bits),
+      ("from #{@manufacturer}" if @manufacturer),
+      ("for #{@device}" if @device),
+    ].compact.join(" ")
   end
 end
 
-RSpec::Matchers.alias_matcher :a_mac_address, :be_a_mac_address
+RSpec::Matchers.alias_matcher(:a_mac_address, :be_a_mac_address) { _1.delete_prefix("be ") }
