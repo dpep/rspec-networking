@@ -14,41 +14,29 @@ RSpec::Matchers.define :be_an_ip_address do
   end
 
   match do |actual|
-    @actual = actual
-
     return false unless actual.is_a?(String) || actual.is_a?(IPAddr)
 
     addr = actual.is_a?(IPAddr) ? actual : IPAddr.new(actual)
 
-    if @version
-      return false unless @version == 4 ? addr.ipv4? : addr.ipv6?
-    end
+    # IPAddr also parses CIDR ranges, eg. "10.0.0.0/8"
+    return false unless addr.prefix == (addr.ipv4? ? 32 : 128)
 
-    if @localhost
-      return false unless addr.loopback?
-    end
+    return false if @version == 4 && !addr.ipv4?
+    return false if @version == 6 && !addr.ipv6?
+    return false if @localhost && !addr.loopback?
 
     true
-  rescue IPAddr::InvalidAddressError
+  rescue IPAddr::Error
     false
   end
 
   description do
     if @version
-      addr = @localhost ? "localhost " : "address"
-      "an IPv#{@version} #{addr}"
+      "be an IPv#{@version} #{"localhost " if @localhost}address"
     else
-      @localhost ? "a localhost" : "an IP address"
+      @localhost ? "be a localhost address" : "be an IP address"
     end
-  end
-
-  failure_message do
-    "expected '#{@actual}' to be #{description}"
-  end
-
-  failure_message_when_negated do
-    "expected '#{@actual}' not to be #{description}"
   end
 end
 
-RSpec::Matchers.alias_matcher :an_ip_address, :be_an_ip_address
+RSpec::Matchers.alias_matcher(:an_ip_address, :be_an_ip_address) { _1.delete_prefix("be ") }
