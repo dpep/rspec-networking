@@ -102,4 +102,4 @@ RSpec::Matchers.define :be_a_mac_address do
   end
 end
 
-RSpec::Matchers.alias_matcher(:a_mac_address, :be_a_mac_address) { _1.delete_prefix("be ") }
+RSpec::Matchers.alias_matcher(:a_mac_address, :be_a_mac_address) { |desc| desc.delete_prefix("be ") }
