@@ -39,4 +39,4 @@ RSpec::Matchers.define :be_an_ip_address do
   end
 end
 
-RSpec::Matchers.alias_matcher(:an_ip_address, :be_an_ip_address) { _1.delete_prefix("be ") }
+RSpec::Matchers.alias_matcher(:an_ip_address, :be_an_ip_address) { |desc| desc.delete_prefix("be ") }
