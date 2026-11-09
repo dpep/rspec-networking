@@ -14,7 +14,6 @@ GEM
       irb (~> 1.10)
       reline (>= 0.3.8)
     diff-lcs (1.6.2)
-    docile (1.4.1)
     erb (4.0.4.1)
       cgi (>= 0.3.3)
     faker (3.5.3)
@@ -53,12 +52,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.7)
-    simplecov (0.22.0)
-      docile (~> 1.1)
-      simplecov-html (~> 0.11)
-      simplecov_json_formatter (~> 0.1)
-    simplecov-html (0.13.2)
-    simplecov_json_formatter (0.1.4)
+    simplecov (1.3.2)
     stringio (3.2.0)
     tsort (0.2.0)
 
@@ -70,7 +64,7 @@ DEPENDENCIES
   faker
   rspec
   rspec-networking!
-  simplecov
+  simplecov (>= 1)
 
 BUNDLED WITH
   4.0.16
