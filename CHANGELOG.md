@@ -1,3 +1,6 @@
+## Unreleased
+- Requires Ruby 3.3 or newer.
+
 ###  0.1.1  (2026-11-01)
 - Manufacturer lookups use fresh IEEE data. Texas Instruments never matched, and OUIs with leading zeros (e.g. Microsoft 00:22:48) were missing.
 - MAC addresses must match the whole string; a multi-line string no longer matches.
