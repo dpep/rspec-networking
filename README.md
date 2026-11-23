@@ -45,19 +45,24 @@ expect(data).to include(addr: an_ip_address)
 
 
 ###  match a MAC address  ###
-# 00:11:22:33:44:55, 00-11-22-33-44-55, 0011.2233.4455, or EUI-64
+# 00:11:22:33:44:55, 00-11-22-33-44-55, or 0011.2233.4455
+# leading zeros are optional, eg. 0:11:22:3:44:55 as macOS arp prints
 expect(obj).to be_a_mac_address
 
+# EUI-64 matches when derived from a 48-bit MAC, eg. 00:11:22:ff:fe:33:44:55
 expect(obj).to be_a_mac_address.bits(48)
+expect(obj).to be_a_mac_address.bits(64)
 
 expect(obj).to be_a_mac_address.broadcast
 expect(obj).to be_a_mac_address.multicast
 expect(obj).to be_a_mac_address.unicast
 
-# check manufacturer or specific device
-expect(obj).to be_a_mac_address.from("xerox")
-expect(obj).to be_a_mac_address.from("00:00:0C")
-expect(obj).to be_a_mac_address.for(device)
+# check manufacturer, by name or OUI (raises on an unknown name)
+expect("00:00:00:12:34:56").to be_a_mac_address.from("xerox")
+expect("00:00:00:12:34:56").to be_a_mac_address.from("00:00:00")
+
+# check device, by its last three octets
+expect("00:00:00:12:34:56").to be_a_mac_address.for("12:34:56")
 
 # compose with other matchers
 expect(data).to include(addr: a_mac_address)
