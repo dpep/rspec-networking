@@ -1,6 +1,7 @@
 ## Unreleased
 - Requires Ruby 3.3 or newer.
 - `be_an_ip_address.private` and `.public`.
+- Strings with a prefix length or brackets, eg. `10.0.0.1/32` or `[::1]`, are no longer IP addresses.
 - MAC addresses may drop leading zeros, eg. `a4:83:e7:1:2:3` as macOS `arp` prints.
 
 ###  0.1.1  (2026-11-01)
