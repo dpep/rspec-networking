@@ -73,6 +73,8 @@ expect(data).to include(addr: a_mac_address)
 - https://en.wikipedia.org/wiki/IP_address
 - https://en.wikipedia.org/wiki/MAC_address
 - https://www.lifewire.com/introduction-to-mac-addresses-817937
+- [IEEE OUI registry](https://standards-oui.ieee.org/): source of manufacturer lookups
+- IANA special-purpose registries for [IPv4](https://www.iana.org/assignments/iana-ipv4-special-registry) and [IPv6](https://www.iana.org/assignments/iana-ipv6-special-registry): what `.public` excludes
 
 
 ----
@@ -87,4 +89,4 @@ Yes please  :)
 1. Push your branch (`git push origin my-feature`)
 1. Create a Pull Request
 
-Manufacturer OUIs come from the [IEEE registry](https://standards-oui.ieee.org/); refresh them with `script/update_manufacturers`.
+Refresh manufacturer OUIs with `script/update_manufacturers`.
