@@ -1,6 +1,7 @@
 ## Unreleased
 - Requires Ruby 3.3 or newer.
 - `be_an_ip_address.private` and `.public`.
+- MAC addresses may drop leading zeros, eg. `a4:83:e7:1:2:3` as macOS `arp` prints.
 
 ###  0.1.1  (2026-11-01)
 - Manufacturer lookups use fresh IEEE data. Texas Instruments never matched, and OUIs with leading zeros (e.g. Microsoft 00:22:48) were missing.

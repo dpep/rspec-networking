@@ -16,6 +16,24 @@ describe "be_a_mac_address" do
     it { is_expected.to be_a_mac_address }
   end
 
+  context "without leading zeros, as macOS arp prints" do
+    subject { "a4:83:e7:1:2:3" }
+
+    it { is_expected.to be_a_mac_address }
+    it { is_expected.to be_a_mac_address.from("apple") }
+    it { is_expected.to be_a_mac_address.from("a4:83:e7") }
+    it { is_expected.to be_a_mac_address.for("1:2:3") }
+    it { is_expected.to be_a_mac_address.for("01:02:03") }
+    it { is_expected.to be_a_mac_address.unicast }
+    it { expect("0:0:0:1:2:3").to be_a_mac_address.from("xerox") }
+    it { expect("1-0-5e-0-0-fb").to be_a_mac_address.multicast }
+    it { expect("0:12:4b:ff:fe:1:2:3").to be_a_mac_address.bits(64) }
+
+    it "rejects octets longer than two digits" do
+      expect("a4:83:e7:001:2:3").not_to be_a_mac_address
+    end
+  end
+
   context "with Cisco notation" do
     subject { "0000.0c12.3456" }
 

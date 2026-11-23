@@ -3,17 +3,19 @@ require "rspec/networking/mac_address_manufacturers"
 module RSpec
   module Networking
     module MacAddress
+      # separated octets may drop a leading zero, as macOS arp prints them
+
       # MM:MM:MM:SS:SS:SS, MM-MM-MM-SS-SS-SS, MMMM.MMSS.SSSS
-      EUI48 = /\A\h{2}([:-])(\h{2}\1){4}\h{2}\z|\A\h{4}(\.\h{4}){2}\z/
+      EUI48 = /\A\h{1,2}([:-])(\h{1,2}\1){4}\h{1,2}\z|\A\h{4}(\.\h{4}){2}\z/
 
       # MM:MM:MM:FF:FE:SS:SS:SS, MMMM:MMFF:FESS:SSSS
-      EUI64 = /\A\h{2}([:-])(\h{2}\1){6}\h{2}\z|\A\h{4}(:\h{4}){3}\z/
+      EUI64 = /\A\h{1,2}([:-])(\h{1,2}\1){6}\h{1,2}\z|\A\h{4}(:\h{4}){3}\z/
 
       # half an EUI-48: MM:MM:MM or SS-SS-SS
-      HALF = /\A\h{2}([:-])\h{2}\1\h{2}\z/
+      HALF = /\A\h{1,2}([:-])\h{1,2}\1\h{1,2}\z/
 
       def self.normalize(str)
-        str.delete(".:-").upcase
+        str.split(/[.:-]/).map { |part| part.rjust(2, "0") }.join.upcase
       end
     end
   end
