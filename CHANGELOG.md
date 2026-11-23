@@ -1,5 +1,6 @@
 ## Unreleased
 - Requires Ruby 3.3 or newer.
+- `be_an_ip_address.private` and `.public`.
 
 ###  0.1.1  (2026-11-01)
 - Manufacturer lookups use fresh IEEE data. Texas Instruments never matched, and OUIs with leading zeros (e.g. Microsoft 00:22:48) were missing.
