@@ -28,6 +28,17 @@ expect(obj).to be_an_ip_address.v6
 # check for localhost
 expect(obj).to be_an_ip_address.localhost
 
+# check for private (10/8, 172.16/12, 192.168/16, fc00::/7)
+expect(obj).to be_an_ip_address.private
+
+# check for public: globally reachable unicast, ie. outside every IANA
+# special-purpose range (localhost, link-local, CGNAT, documentation, ...)
+expect(obj).to be_an_ip_address.public
+
+# negated matchers pass for anything that isn't an IP address, including nil
+expect(obj).not_to be_an_ip_address.public  # passes for nil
+expect(obj).to be_an_ip_address.private     # prefer the positive form
+
 # compose with other matchers
 expect(data).to include(addr: an_ip_address)
 

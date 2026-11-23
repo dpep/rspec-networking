@@ -76,6 +76,64 @@ describe "be_an_ip_address" do
     end
   end
 
+  describe ".private and .public" do
+    %w[10.0.0.1 172.16.0.0 172.31.255.255 192.168.1.1 fc00::1 fd00::1 ::ffff:10.0.0.1].each do |addr|
+      context addr do
+        subject { addr }
+
+        it { is_expected.to be_an_ip_address.private }
+        it { is_expected.not_to be_an_ip_address.public }
+      end
+    end
+
+    %w[1.1.1.1 172.15.255.255 172.32.0.0 2606:4700::1111 ::ffff:1.1.1.1].each do |addr|
+      context addr do
+        subject { addr }
+
+        it { is_expected.to be_an_ip_address.public }
+        it { is_expected.not_to be_an_ip_address.private }
+      end
+    end
+
+    # special-purpose ranges: neither private nor public
+    %w[
+      127.0.0.1 ::1 ::ffff:127.0.0.1
+      169.254.169.254 fe80::1 ::ffff:169.254.169.254
+      0.0.0.0 0.1.2.3 :: ::ffff:0.0.0.0
+      100.64.0.1 192.0.0.1 192.0.2.1 198.18.0.1 198.51.100.1 203.0.113.1
+      224.0.0.1 239.255.255.250 240.0.0.1 255.255.255.255
+      ::10.0.0.1 64:ff9b::a00:1 100::1 2001::1 2001:db8::1 2002:a00:1:: fec0::1 ff02::1 ff0e::1
+    ].each do |addr|
+      context addr do
+        subject { addr }
+
+        it { is_expected.not_to be_an_ip_address.public }
+        it { is_expected.not_to be_an_ip_address.private }
+      end
+    end
+
+    it "composes with version" do
+      expect("10.0.0.1").to be_an_ip_address.v4.private
+      expect("10.0.0.1").not_to be_an_ip_address.v6.private
+    end
+
+    it "rejects conflicting chains" do
+      expect { be_an_ip_address.private.public }.to raise_error(ArgumentError, /private.*public/)
+      expect { be_an_ip_address.localhost.private }.to raise_error(ArgumentError)
+      expect { be_an_ip_address.public.localhost }.to raise_error(ArgumentError)
+    end
+
+    it "fails with a useful message" do
+      expect {
+        expect("1.1.1.1").to be_an_ip_address.private
+      }.to fail_with('expected "1.1.1.1" to be a private IP address')
+
+      expect {
+        expect("10.0.0.1").to be_an_ip_address.v4.public
+      }.to fail_with('expected "10.0.0.1" to be a public IPv4 address')
+    end
+  end
+
   context "with an IPAddr object" do
     subject { IPAddr.new(Faker::Internet.ip_v4_address) }
 
