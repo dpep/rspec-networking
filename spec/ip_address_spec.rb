@@ -149,6 +149,11 @@ describe "be_an_ip_address" do
     it { expect("10.0.0.0/8").not_to be_an_ip_address }
     it { expect(IPAddr.new("10.0.0.0/8")).not_to be_an_ip_address }
     it { expect("::/64").not_to be_an_ip_address }
+    it { expect("10.0.0.1/32").not_to be_an_ip_address }
+    it { expect("10.0.0.1/255.255.255.255").not_to be_an_ip_address }
+    it { expect("fd00::1/128").not_to be_an_ip_address.private }
+    it { expect("[::1]").not_to be_an_ip_address }
+    it { expect("[fd00::1]").not_to be_an_ip_address.private }
   end
 
   context "with a mismatched IPAddr object" do

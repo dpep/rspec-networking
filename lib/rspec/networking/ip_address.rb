@@ -45,9 +45,12 @@ RSpec::Matchers.define :be_an_ip_address do
   match do |actual|
     return false unless actual.is_a?(String) || actual.is_a?(IPAddr)
 
+    # IPAddr also parses CIDR ranges and brackets, eg. "10.0.0.0/8", "[::1]"
+    return false if actual.is_a?(String) && actual.match?(%r{[/\[\]]})
+
     addr = actual.is_a?(IPAddr) ? actual : IPAddr.new(actual)
 
-    # IPAddr also parses CIDR ranges, eg. "10.0.0.0/8"
+    # an IPAddr may be a network, eg. IPAddr.new("10.0.0.0/8")
     return false unless addr.prefix == (addr.ipv4? ? 32 : 128)
 
     return false if @version == 4 && !addr.ipv4?
